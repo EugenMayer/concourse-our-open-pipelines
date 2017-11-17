@@ -1,0 +1,31 @@
+jobs:
+- name: build-docker-image-resource
+  serial: true
+  build_logs_to_retain: 100
+  plan:
+  - get: docker-image-resource
+    trigger: true
+  - task: build-docker-image-resource
+    file: docker-image-resource/ci/build.yml
+    input_mapping:
+      docker-image-resource: docker-image-resource
+    output_mapping:
+      built-resource: docker-built-context
+  - put: eugenmayer-docker-image-resource
+    params:
+      build: docker-built-context
+
+resources:
+  - name: docker-image-resource
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-resource
+      branch: develop
+
+  - name: eugenmayer-docker-image-resource
+    type: docker-image
+    source:
+      repository: eugenmayer/concourse-docker-image-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
