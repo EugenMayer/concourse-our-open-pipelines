@@ -55,8 +55,6 @@ resources:
     type: docker-image
     source:
       repository: concourse/concourse
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
       tag: 3.6
 
   - name: concourse-worker-solid
