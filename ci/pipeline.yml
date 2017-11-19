@@ -5,7 +5,7 @@ groups:
 - name: concourse-docker-images
   jobs:
   - build-docker-image-concourse-worker
-
+  - build-docker-image-concourse-configurator
 
 jobs:
 - name: build-docker-image-resource
@@ -34,9 +34,23 @@ jobs:
     trigger: true
     params:
       skip_download: true
-  - put: concourse-worker-solid
+  - put: concourse-worker-solid-image
     params:
       build: docker-image-concourseci-worker-solid
+
+- name: build-docker-image-concourse-configurator
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-image-concourseci-configurator
+    trigger: true
+  - get: alpine-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: concourse-configurator-image
+    params:
+      build: docker-image-concourseci-configurator
 
 resources:
   - name: docker-image-resource
@@ -51,16 +65,41 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-concourseci-worker-solid
       branch: master
 
+  - name: docker-image-concourseci-configurator
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-concourse-configurator
+      branch: master
+
   - name: concourse-base-image
     type: docker-image
     source:
       repository: concourse/concourse
-      tag: 3.6
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: 3.6.0
 
-  - name: concourse-worker-solid
+  - name: concourse-worker-solid-image
     type: docker-image
     source:
       repository: eugenmayer/concourse-worker-solid
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: 3.6.0
+
+  - name: concourse-configurator-image
+    type: docker-image
+    source:
+      repository: eugenmayer/concourse-configurator
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+
+  - name: alpine-image
+    type: docker-image
+    source:
+      repository: alpine
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: 3.6
