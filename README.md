@@ -1,0 +1,31 @@
+# WAT
+
+Pipelines we use to build projects we found or created, mostly around concourse but also others
+
+## projects
+
+### docker-image-resource-ng
+
+Replaces / extends the core implementation of concourse [docker-image-resource](https://github.com/concourse/docker-image-resource) with [docker-image-resource-ng](https://github.com/EugenMayer/docker-image-resource-ng) to:
+
+ - enable you to login into multiple private registries at the same time
+ - which helps you building images which derive from image `1` form private registry `A` and pushing image `2` to registry B
+ - avoids using `docker save/load` at all costs, since both are very slow and blocking - push / pull is a lot faster
+ 
+Source can be found [here](https://github.com/EugenMayer/docker-image-resource-ng) 
+The docker-image can be found under [eugenmayer/concourse-docker-image-resource](https://hub.docker.com/r/eugenmayer/concourse-docker-image-resource/)
+
+### concourse worker solid
+
+Currently when running concourse-workers in non BOSH environments, like we do with `docker-compose`, see https://github.com/EugenMayer/concourseci-server-boilerplate
+when you shutdown the stack for restart or upgrade, the worker becomes to be in a broken, undefined state, leading to a lot of different issues like
+
+ - "file not found" when running a task /job in concourse or during a resource trigger
+ - job / task is stalled / stuck in the "preparing build" state, not doing anything
+
+What we do here is simply put, trap the worker and `concourse land-worker` before we kill / stop the worker-container
+And thats about it
+
+The docker-image can be found under [eugenmayer/concourse-worker-solid](https://hub.docker.com/r/eugenmayer/concourse-worker-solid/)
+
+
