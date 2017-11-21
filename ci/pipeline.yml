@@ -23,6 +23,7 @@ jobs:
   - put: eugenmayer-docker-image-resource
     params:
       build: docker-built-context
+      cache_tag: latest
 
 - name: build-docker-image-concourse-worker
   serial: true
@@ -37,6 +38,7 @@ jobs:
   - put: concourse-worker-solid-image
     params:
       build: docker-image-concourseci-worker-solid
+      cache_tag: latest
 
 - name: build-docker-image-concourse-configurator
   serial: true
@@ -51,6 +53,7 @@ jobs:
   - put: concourse-configurator-image
     params:
       build: docker-image-concourseci-configurator
+      cache_tag: latest
 
 resources:
   - name: docker-image-resource
@@ -72,7 +75,7 @@ resources:
       branch: master
 
   - name: concourse-base-image
-    type: docker-image
+    type: docker-image-resource-ng
     source:
       repository: concourse/concourse
       username: ((dockerhub.user))
@@ -80,7 +83,7 @@ resources:
       tag: 3.6.0
 
   - name: concourse-worker-solid-image
-    type: docker-image
+    type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-worker-solid
       username: ((dockerhub.user))
@@ -88,7 +91,7 @@ resources:
       tag: 3.6.0
 
   - name: concourse-configurator-image
-    type: docker-image
+    type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-configurator
       username: ((dockerhub.user))
@@ -97,7 +100,7 @@ resources:
 
 
   - name: alpine-image
-    type: docker-image
+    type: docker-image-resource-ng
     source:
       repository: alpine
       username: ((dockerhub.user))
@@ -105,9 +108,17 @@ resources:
       tag: 3.6
 
   - name: eugenmayer-docker-image-resource
-    type: docker-image
+    type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-docker-image-resource
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
+
+resource_types:
+- name: docker-image-resource-ng
+  type: docker-image
+  privileged: true
+  source:
+    repository: eugenmayer/concourse-docker-image-resource
+    tag: latest
