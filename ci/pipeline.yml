@@ -2,6 +2,7 @@ groups:
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
+  - build-concourse-static-download-resource-image
 - name: concourse-docker-images
   jobs:
   - build-docker-image-concourse-worker
@@ -65,9 +66,9 @@ jobs:
     trigger: true
     params:
       skip_download: true
-  - put: concourse-configurator-image
+  - put: concourse-static-download-resource-image
     params:
-      build: docker-image-concourseci-configurator
+      build: concourse-static-download-resource
       cache_tag: latest
 
 resources:
@@ -134,7 +135,7 @@ resources:
       repository: alpine
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: 3.6
+      tag: edge
 
   - name: eugenmayer-docker-image-resource
     type: docker-image-resource-ng
@@ -144,6 +145,13 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
+  - name: concourse-static-download-resource-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/concourse-static-download-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
 resource_types:
 - name: docker-image-resource-ng
   type: docker-image
