@@ -11,7 +11,7 @@ and also setup all this manually. This is very interruptive and also makes spinn
 build a rancher catalog for concourse would be very inconvenient. Thats is where the configurator helps a lot, i used it for
 
  - the rancher catalog : https://github.com/EugenMayer/docker-rancher-extra-catalogs/tree/master/templates/concourseci
- - and the boilerplate to instantly spinup a working concoure-server with a vault locally, very handy for developing pipelines: https://github.com/EugenMayer/concourseci-server-boilerplate 
+ - and the boilerplate to instantly spinup a working concoure-server with a vault locally, very handy for developing pipelines: https://github.com/EugenMayer/concourseci-server-boilerplate
 
 See https://github.com/EugenMayer/docker-image-concourse-configurator for more documentations and usage, or just see the boilerplate for a conrete example
 
@@ -36,7 +36,16 @@ Replaces / extends the core implementation of concourse [docker-image-resource](
  - enable you to login into multiple private registries at the same time
  - which helps you building images which derive from image `1` form private registry `A` and pushing image `2` to registry B
  - avoids using `docker save/load` at all costs, since both are very slow and blocking - push / pull is a lot faster
- 
-Source can be found [here](https://github.com/EugenMayer/docker-image-resource-ng) 
+
+Source can be found [here](https://github.com/EugenMayer/docker-image-resource-ng)
 The docker-image can be found under [eugenmayer/concourse-docker-image-resource](https://hub.docker.com/r/eugenmayer/concourse-docker-image-resource/)
 
+### static-download-resource
+
+Replaces / reimplements the `archive-resource` with [static-download-resource](https://github.com/EugenMayer/concourse-static-download-resource)
+
+ - enables you to pull in static artefacts (fixed version) from any URL
+ - supports basic auth for authentication
+ - you can use this in a pipeline, not only in `execute`
+
+Source and docs can be found at [static-download-resource](https://github.com/EugenMayer/concourse-static-download-resource).The docker-image can be found under [eugenmayer/concourse-static-download-resource](https://hub.docker.com/r/eugenmayer/concourse-static-download-resource/)

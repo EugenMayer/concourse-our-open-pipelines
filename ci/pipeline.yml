@@ -55,7 +55,28 @@ jobs:
       build: docker-image-concourseci-configurator
       cache_tag: latest
 
+- name: build-concourse-static-download-resource-image
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: concourse-static-download-resource
+    trigger: true
+  - get: alpine-edge-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: concourse-configurator-image
+    params:
+      build: docker-image-concourseci-configurator
+      cache_tag: latest
+
 resources:
+  - name: concourse-static-download-resource
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/concourse-static-download-resource
+      branch: master
+
   - name: docker-image-resource
     type: git
     source:
@@ -100,6 +121,14 @@ resources:
 
 
   - name: alpine-image
+    type: docker-image-resource-ng
+    source:
+      repository: alpine
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: 3.6
+
+  - name: alpine-edge-image
     type: docker-image-resource-ng
     source:
       repository: alpine
