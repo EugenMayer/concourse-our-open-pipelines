@@ -40,12 +40,13 @@ Replaces / extends the core implementation of concourse [docker-image-resource](
 Source can be found [here](https://github.com/EugenMayer/docker-image-resource-ng)
 The docker-image can be found under [eugenmayer/concourse-docker-image-resource](https://hub.docker.com/r/eugenmayer/concourse-docker-image-resource/)
 
-### static-download-resource
+### static-resource
 
-Replaces / reimplements the `archive-resource` with [static-download-resource](https://github.com/EugenMayer/concourse-static-download-resource)
+Replaces / reimplements the `archive-resource` with [static-resource](https://github.com/EugenMayer/concourse-static-resource)
 
  - enables you to pull in static artefacts (fixed version) from any URL
  - supports basic auth for authentication
  - you can use this in a pipeline, not only in `execute`
+ - enables you to upload a file using a mulitpart upload, e.g. for a `Sonatype nexus raw repository`
 
-Source and docs can be found at [static-download-resource](https://github.com/EugenMayer/concourse-static-download-resource).The docker-image can be found under [eugenmayer/concourse-static-download-resource](https://hub.docker.com/r/eugenmayer/concourse-static-download-resource/)
+Source and docs can be found at [static-resource](https://github.com/EugenMayer/concourse-static-resource).The docker-image can be found under [eugenmayer/concourse-static-resource](https://hub.docker.com/r/eugenmayer/concourse-static-resource/)
