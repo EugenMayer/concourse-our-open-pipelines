@@ -2,7 +2,7 @@ groups:
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
-  - build-concourse-static-download-resource-image
+  - build-concourse-static-resource-image
 - name: concourse-docker-images
   jobs:
   - build-docker-image-concourse-worker
@@ -72,10 +72,10 @@ jobs:
       cache_tag: latest
 
 resources:
-  - name: concourse-static-download-resource
+  - name: concourse-static-resource
     type: git
     source:
-      uri: https://github.com/EugenMayer/concourse-static-download-resource
+      uri: https://github.com/EugenMayer/concourse-static-resource
       branch: master
 
   - name: docker-image-resource
