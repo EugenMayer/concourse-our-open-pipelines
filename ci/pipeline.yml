@@ -71,7 +71,27 @@ jobs:
       build: concourse-static-resource
       cache_tag: latest
 
+- name: build-docker-s3fs-image
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-image-s3fs
+    trigger: true
+  - get: debian-stretch-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: eugenmayer-docker-image-aws-s3fs
+    params:
+      build: docker-image-s3fs
+      cache_tag: latest
 resources:
+  - name: docker-image-s3fs
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-s3fs
+      branch: master
+
   - name: concourse-static-resource
     type: git
     source:
@@ -120,6 +140,13 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
+  - name: debian-stretch-image
+    type: docker-image-resource-ng
+    source:
+      repository: debian
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: stretch
 
   - name: alpine-image
     type: docker-image-resource-ng
@@ -136,6 +163,14 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: edge
+
+  - name: eugenmayer-docker-image-aws-s3fs
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/aws-s3fs
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
 
   - name: eugenmayer-docker-image-resource
     type: docker-image-resource-ng
