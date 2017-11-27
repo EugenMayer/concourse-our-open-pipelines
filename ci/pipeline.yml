@@ -10,6 +10,10 @@ groups:
   jobs:
   - build-docker-image-concourse-worker
   - build-docker-image-concourse-configurator
+- name: atlassian-docker-images
+  jobs:
+  - build-docker-images-confluence
+  - build-docker-images-jira
 
 jobs:
 - name: build-docker-image-resource
@@ -88,6 +92,51 @@ jobs:
     params:
       build: docker-image-s3fs
       cache_tag: latest
+
+- name: build-docker-images-confluence
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+    - get: atlassian-confluence-docker-image-src
+      trigger: true
+    # A fixed earlier version
+    - put: atlassian-confluence-docker-image
+      params:
+        build: atlassian-confluence-docker-image-src
+        tag_static: ((confluence.early))
+        build_args:
+          CONFLUENCE_VERSION: ((confluence.early))
+    # The latest version tagged as <version> and as 'latest'
+    - put: atlassian-confluence-docker-image
+      params:
+        build: atlassian-confluence-docker-image-src
+        tag_static: ((confluence.latest))
+        tag_as_latest: true
+        build_args:
+          CONFLUENCE_VERSION: ((confluence.latest))
+
+- name: build-docker-images-jira
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+    - get: atlassian-jira-docker-image-src
+      trigger: true
+    # A fixed earlier version
+    - put: atlassian-jira-docker-image
+      params:
+        build: atlassian-jira-docker-image-src
+        tag_static: en-((jira.early))
+        build_args:
+          JIRA_VERSION: ((jira.early))
+    # The latest version tagged as <version> and as 'latest'
+    - put: atlassian-jira-docker-image
+      params:
+        build: atlassian-jira-docker-image-src
+        tag_static: en-((jira.latest))
+        tag_as_latest: true
+        build_args:
+          JIRA_VERSION: ((jira.latest))
+
 resources:
   - name: docker-image-s3fs
     type: git
@@ -176,7 +225,7 @@ resources:
       tag: latest
 
   - name: eugenmayer-docker-image-resource
-    type: docker-image-resource-ng
+    type: docker-image
     source:
       repository: eugenmayer/concourse-docker-image-resource
       username: ((dockerhub.user))
@@ -187,6 +236,34 @@ resources:
     type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-static-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  - name: atlassian-confluence-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
+      branch: master
+
+  - name: atlassian-confluence-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/confluence
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  - name: atlassian-jira-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-jira
+      branch: master
+
+  - name: atlassian-jira-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/jira
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest

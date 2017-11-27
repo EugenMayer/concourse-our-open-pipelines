@@ -1,0 +1,7 @@
+confluence:
+  early: 5.7.6
+  latest: 6.5.1
+
+jira:
+  early: 7.0.0
+  latest: 7.6.0
