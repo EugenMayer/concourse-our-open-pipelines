@@ -1,4 +1,7 @@
 groups:
+- name: docker-tools
+  jobs:
+  - build-docker-s3fs-image
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
