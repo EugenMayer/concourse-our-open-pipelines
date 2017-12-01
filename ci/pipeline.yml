@@ -48,7 +48,7 @@ jobs:
     params:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.6
-      tag_static: 3.6
+      tag_static: 3.6.0
       cache_tag: latest
       
 - name: build-docker-image-concourse-worker-3.7
@@ -65,7 +65,7 @@ jobs:
     params:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.7
-      tag_static: 3.7
+      tag_static: 3.7.0
       cache_tag: latest  
 
 - name: build-docker-image-concourse-configurator
