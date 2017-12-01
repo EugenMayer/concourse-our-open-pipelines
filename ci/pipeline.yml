@@ -8,7 +8,8 @@ groups:
   - build-concourse-static-resource-image
 - name: concourse-docker-images
   jobs:
-  - build-docker-image-concourse-worker
+  - build-docker-image-concourse-worker-3.6
+  - build-docker-image-concourse-worker-3.7
   - build-docker-image-concourse-configurator
 - name: atlassian-docker-images
   jobs:
@@ -33,20 +34,39 @@ jobs:
       build: docker-built-context
       cache_tag: latest
 
-- name: build-docker-image-concourse-worker
+- name: build-docker-image-concourse-worker-3.6
   serial: true
   build_logs_to_retain: 10
   plan:
   - get: docker-image-concourseci-worker-solid
     trigger: true
-  - get: concourse-base-image
+  - get: concourse-base-image-3.6
     trigger: true
     params:
       skip_download: true
   - put: concourse-worker-solid-image
     params:
       build: docker-image-concourseci-worker-solid
+      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.6
+      tag_static: 3.6
       cache_tag: latest
+      
+- name: build-docker-image-concourse-worker-3.7
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-image-concourseci-worker-solid
+    trigger: true
+  - get: concourse-base-image-3.7
+    trigger: true
+    params:
+      skip_download: true      
+  - put: concourse-worker-solid-image
+    params:
+      build: docker-image-concourseci-worker-solid
+      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.7
+      tag_static: 3.7
+      cache_tag: latest  
 
 - name: build-docker-image-concourse-configurator
   serial: true
@@ -168,7 +188,7 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-concourse-configurator
       branch: master
 
-  - name: concourse-base-image
+  - name: concourse-base-image-3.6
     type: docker-image-resource-ng
     source:
       repository: concourse/concourse
@@ -176,13 +196,21 @@ resources:
       password: ((dockerhub.password))
       tag: 3.6.0
 
+  - name: concourse-base-image-3.7
+    type: docker-image-resource-ng
+    source:
+      repository: concourse/concourse
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: 3.7.0
+
   - name: concourse-worker-solid-image
     type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-worker-solid
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: 3.6.0
+      tag: 3.7.0
 
   - name: concourse-configurator-image
     type: docker-image-resource-ng
