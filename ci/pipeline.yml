@@ -117,6 +117,8 @@ jobs:
   serial: true
   build_logs_to_retain: 10
   plan:
+    - get: pipeline-versions-src
+      trigger: true
     - get: atlassian-confluence-docker-image-src
       trigger: true
     # A fixed earlier version
@@ -139,6 +141,8 @@ jobs:
   serial: true
   build_logs_to_retain: 10
   plan:
+    - get: pipeline-versions-src
+      trigger: true
     - get: atlassian-jira-docker-image-src
       trigger: true
     # A fixed earlier version
@@ -273,6 +277,13 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
       branch: master
+
+  - name: pipeline-versions-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/concourse-our-open-pipelines
+      branch: master
+      paths: ['ci/versions.yml']
 
   - name: atlassian-confluence-docker-image
     type: docker-image-resource-ng
