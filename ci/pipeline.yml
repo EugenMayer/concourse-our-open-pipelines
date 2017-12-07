@@ -10,6 +10,7 @@ groups:
   jobs:
   - build-docker-image-concourse-worker-3.6
   - build-docker-image-concourse-worker-3.7
+  - build-docker-image-concourse-worker-3.8
   - build-docker-image-concourse-configurator
 - name: atlassian-docker-images
   jobs:
@@ -66,6 +67,23 @@ jobs:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.7
       tag_static: 3.7.0
+      cache_tag: latest  
+
+- name: build-docker-image-concourse-worker-3.8
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-image-concourseci-worker-solid
+    trigger: true
+  - get: concourse-base-image-3.7
+    trigger: true
+    params:
+      skip_download: true      
+  - put: concourse-worker-solid-image
+    params:
+      build: docker-image-concourseci-worker-solid
+      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.8
+      tag_static: 3.8.0
       cache_tag: latest  
 
 - name: build-docker-image-concourse-configurator
