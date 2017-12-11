@@ -31,6 +31,7 @@ jobs:
     output_mapping:
       built-resource: docker-built-context
   - put: eugenmayer-docker-image-resource
+    get_params: { skip_download : true }
     params:
       build: docker-built-context
       cache_tag: latest
@@ -46,6 +47,7 @@ jobs:
     params:
       skip_download: true
   - put: concourse-worker-solid-image
+    get_params: { skip_download : true }
     params:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.6
@@ -63,6 +65,7 @@ jobs:
     params:
       skip_download: true      
   - put: concourse-worker-solid-image
+    get_params: { skip_download : true }
     params:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.7
@@ -97,6 +100,7 @@ jobs:
     params:
       skip_download: true
   - put: concourse-configurator-image
+    get_params: { skip_download : true }
     params:
       build: docker-image-concourseci-configurator
       cache_tag: latest
@@ -112,6 +116,7 @@ jobs:
     params:
       skip_download: true
   - put: concourse-static-resource-image
+    get_params: { skip_download : true }
     params:
       build: concourse-static-resource
       cache_tag: latest
@@ -127,6 +132,7 @@ jobs:
     params:
       skip_download: true
   - put: eugenmayer-docker-image-aws-s3fs
+    get_params: { skip_download : true }
     params:
       build: docker-image-s3fs
       cache_tag: latest
@@ -141,6 +147,7 @@ jobs:
       trigger: true
     # A fixed earlier version
     - put: atlassian-confluence-docker-image
+      get_params: { skip_download : true }
       params:
         build: atlassian-confluence-docker-image-src
         tag_static: ((confluence.early))
@@ -148,6 +155,7 @@ jobs:
           CONFLUENCE_VERSION: ((confluence.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-confluence-docker-image
+      get_params: { skip_download : true }
       params:
         build: atlassian-confluence-docker-image-src
         tag_static: ((confluence.latest))
@@ -165,6 +173,7 @@ jobs:
       trigger: true
     # A fixed earlier version
     - put: atlassian-jira-docker-image
+      get_params: { skip_download : true }
       params:
         build: atlassian-jira-docker-image-src
         tag_static: en-((jira.early))
@@ -172,6 +181,7 @@ jobs:
           JIRA_VERSION: ((jira.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-jira-docker-image
+      get_params: { skip_download : true }
       params:
         build: atlassian-jira-docker-image-src
         tag_static: en-((jira.latest))
