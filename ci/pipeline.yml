@@ -8,9 +8,7 @@ groups:
   - build-concourse-static-resource-image
 - name: concourse-docker-images
   jobs:
-  - build-docker-image-concourse-worker-3.6
-  - build-docker-image-concourse-worker-3.7
-  - build-docker-image-concourse-worker-3.8
+  - build-docker-image-concourse-worker
   - build-docker-image-concourse-configurator
 - name: atlassian-docker-images
   jobs:
@@ -20,7 +18,7 @@ groups:
 jobs:
 - name: build-docker-image-resource
   serial: true
-  build_logs_to_retain: 100
+  build_logs_to_retain: 5
   plan:
   - get: docker-image-resource
     trigger: true
@@ -35,50 +33,14 @@ jobs:
     params:
       build: docker-built-context
       cache_tag: latest
-
-- name: build-docker-image-concourse-worker-3.6
-  serial: true
-  build_logs_to_retain: 10
-  plan:
-  - get: docker-image-concourseci-worker-solid
-    trigger: true
-  - get: concourse-base-image-3.6
-    trigger: true
-    params:
-      skip_download: true
-  - put: concourse-worker-solid-image
-    get_params: { skip_download : true }
-    params:
-      build: docker-image-concourseci-worker-solid
-      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.6
-      tag_static: 3.6.0
-      cache_tag: latest
       
-- name: build-docker-image-concourse-worker-3.7
+- name: build-docker-image-concourse-worker
   serial: true
-  build_logs_to_retain: 10
+  build_logs_to_retain: 5
   plan:
   - get: docker-image-concourseci-worker-solid
     trigger: true
-  - get: concourse-base-image-3.7
-    trigger: true
-    params:
-      skip_download: true      
-  - put: concourse-worker-solid-image
-    get_params: { skip_download : true }
-    params:
-      build: docker-image-concourseci-worker-solid
-      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.7
-      tag_static: 3.7.0
-      cache_tag: latest  
-
-- name: build-docker-image-concourse-worker-3.8
-  serial: true
-  build_logs_to_retain: 10
-  plan:
-  - get: docker-image-concourseci-worker-solid
-    trigger: true
-  - get: concourse-base-image-3.7
+  - get: concourse-base-image
     trigger: true
     params:
       skip_download: true      
@@ -86,7 +48,7 @@ jobs:
     params:
       build: docker-image-concourseci-worker-solid
       dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.8
-      tag_static: 3.8.0
+      tag_static: ((concourse))
       cache_tag: latest  
 
 - name: build-docker-image-concourse-configurator
@@ -107,7 +69,7 @@ jobs:
 
 - name: build-concourse-static-resource-image
   serial: true
-  build_logs_to_retain: 10
+  build_logs_to_retain: 5
   plan:
   - get: concourse-static-resource
     trigger: true
@@ -123,7 +85,7 @@ jobs:
 
 - name: build-docker-s3fs-image
   serial: true
-  build_logs_to_retain: 10
+  build_logs_to_retain: 5
   plan:
   - get: docker-image-s3fs
     trigger: true
@@ -139,7 +101,7 @@ jobs:
 
 - name: build-docker-images-confluence
   serial: true
-  build_logs_to_retain: 10
+  build_logs_to_retain: 5
   plan:
     - get: pipeline-versions-src
       trigger: true
@@ -165,7 +127,7 @@ jobs:
 
 - name: build-docker-images-jira
   serial: true
-  build_logs_to_retain: 10
+  build_logs_to_retain: 5
   plan:
     - get: pipeline-versions-src
       trigger: true
@@ -220,21 +182,14 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-concourse-configurator
       branch: master
 
-  - name: concourse-base-image-3.6
+ 
+  - name: concourse-base-image
     type: docker-image-resource-ng
     source:
       repository: concourse/concourse
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: 3.6.0
-
-  - name: concourse-base-image-3.7
-    type: docker-image-resource-ng
-    source:
-      repository: concourse/concourse
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: 3.7.0
+      tag: ((concourse))
 
   - name: concourse-worker-solid-image
     type: docker-image-resource-ng
@@ -242,7 +197,7 @@ resources:
       repository: eugenmayer/concourse-worker-solid
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: 3.7.0
+      tag: ((concourse))
 
   - name: concourse-configurator-image
     type: docker-image-resource-ng
