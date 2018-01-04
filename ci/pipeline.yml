@@ -10,6 +10,7 @@ groups:
   jobs:
   - build-docker-image-concourse-worker
   - build-docker-image-concourse-configurator
+  - build-docker-image-concourse-worker-configurator
 - name: atlassian-docker-images
   jobs:
   - build-docker-images-confluence
