@@ -55,7 +55,7 @@ jobs:
   serial: true
   build_logs_to_retain: 10
   plan:
-  - get: docker-image-concourseci-configurator
+  - get: docker-image-concourseci-configurator-repo
     trigger: true
   - get: alpine-image
     trigger: true
@@ -64,7 +64,22 @@ jobs:
   - put: concourse-configurator-image
     get_params: { skip_download : true }
     params:
-      build: docker-image-concourseci-configurator
+      build: docker-image-concourseci-configurator-repo
+      cache_tag: latest
+- name: build-docker-image-concourse-worker-configurator
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-image-concourseci-worker-configurator-repo
+    trigger: true
+  - get: alpine-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: concourse-worker-configurator-image
+    get_params: { skip_download : true }
+    params:
+      build: docker-image-concourseci-worker-configurator-repo
       cache_tag: latest
 
 - name: build-concourse-static-resource-image
@@ -176,12 +191,17 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-concourseci-worker-solid
       branch: master
 
-  - name: docker-image-concourseci-configurator
+  - name: docker-image-concourseci-configurator-repo
     type: git
     source:
       uri: https://github.com/EugenMayer/docker-image-concourse-configurator
       branch: master
 
+  - name: docker-image-concourseci-worker-configurator-repo
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-concourse-worker-configurator
+      branch: master
  
   - name: concourse-base-image
     type: docker-image-resource-ng
@@ -203,6 +223,14 @@ resources:
     type: docker-image-resource-ng
     source:
       repository: eugenmayer/concourse-configurator
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  - name: concourse-worker-configurator-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/concourse-worker-configurator
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
