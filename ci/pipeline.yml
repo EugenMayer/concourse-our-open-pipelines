@@ -2,6 +2,7 @@ groups:
 - name: docker-tools
   jobs:
   - build-docker-s3fs-image
+  - build-docker-golang-glide-image
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
@@ -99,6 +100,21 @@ jobs:
       build: concourse-static-resource
       cache_tag: latest
 
+- name: build-docker-golang-glide-image
+  serial: true
+  build_logs_to_retain: 5
+  plan:
+  - get: docker-image-golang-glide-repo
+    trigger: true
+  - get: golang-alpine-1.9-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: eugenmayer-docker-image-golang-glide
+    get_params: { skip_download : true }
+    params:
+      build: docker-image-golang-glide-repo
+      cache_tag: latest
 - name: build-docker-s3fs-image
   serial: true
   build_logs_to_retain: 5
@@ -173,6 +189,12 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-s3fs
       branch: master
+ 
+  - name: docker-image-golang-glide-repo
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-golang-glide
+      branch: master      
 
   - name: concourse-static-resource
     type: git
@@ -243,6 +265,13 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: stretch
+  - name: golang-alpine-1.9-image
+    type: docker-image-resource-ng
+    source:
+      repository: golang
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: 1.9-alpine      
 
   - name: alpine-image
     type: docker-image-resource-ng
@@ -267,6 +296,13 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
+  - name: eugenmayer-docker-image-golang-glide
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/golang-glide
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest      
 
   - name: eugenmayer-docker-image-resource
     type: docker-image
