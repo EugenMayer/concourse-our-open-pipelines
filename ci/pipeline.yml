@@ -283,7 +283,8 @@ resources:
     type: github-release
     source:
       owner: eugenmayer
-      repository: eugenmayer/opnsense-cli
+      # do not include the username in here
+      repository: opnsense-cli
       access_token: ((github_release_token.key))
 
   - name: docker-image-concourseci-configurator-repo
