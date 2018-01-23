@@ -50,7 +50,7 @@ jobs:
       trigger:                 true
     - get:                     opnsense-cli-repo
   - task:                      build-dist
-    file:                      kw-docker-lib/ci/tasks/golang-build.yml
+    file:                      kw-docker-lib/ci/tasks/golang-release.yml
     input_mapping:
       repo:                    opnsense-cli-repo
       version:                 opnsense-cli-version
@@ -65,7 +65,7 @@ jobs:
       name: opnsense-cli-version/number
       tag: opnsense-cli-version/number
       globs:
-      - opnsense-cli-dist/dist/*
+      - opnsense-cli-dist/opn-*
 
 - name: build-docker-image-resource
   serial: true
