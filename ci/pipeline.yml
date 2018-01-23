@@ -62,8 +62,8 @@ jobs:
       artifact:                opnsense-cli-dist
   - put:                       release-opnsense-cli
     params:
-      name: opnsense-cli-version/version
-      tag: opnsense-cli-version/version
+      name: opnsense-cli-version/number
+      tag: opnsense-cli-version/number
       globs:
       - opnsense-cli-dist/dist/*
 
