@@ -6,6 +6,7 @@ groups:
 - name: opnsense
   jobs:
   - build-opnsense-cli
+  - release-opnsense-cli
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
@@ -259,9 +260,8 @@ resources:
   - name: opnsense-cli-version
     type: concourse-git-semver-tag
     source:
-      uri: git@github.com:concourse/concourse.git
+      uri: https://github.com/EugenMayer/opnsense-cli
       branch: master
-      
   - name: concourse-static-resource
     type: git
     source:
@@ -284,7 +284,7 @@ resources:
     source:
       owner: eugenmayer
       repository: eugenmayer/opnsense-cli
-      access_token: {{github_release_token.key}}
+      access_token: ((github_release_token.key))
 
   - name: docker-image-concourseci-configurator-repo
     type: git
