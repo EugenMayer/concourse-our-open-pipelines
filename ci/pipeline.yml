@@ -3,6 +3,9 @@ groups:
   jobs:
   - build-docker-s3fs-image
   - build-docker-golang-glide-image
+- name: opnsense
+  jobs:
+  - build-opnsense-cli
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
@@ -18,6 +21,51 @@ groups:
   - build-docker-images-jira
 
 jobs:
+- name: build-opnsense-cli
+  serial:                      true
+  build_logs_to_retain:        5
+  plan:
+  - aggregate:
+    - get:                     kw-docker-lib
+    - get:                     opnsense-cli-repo
+      trigger:                 true
+  - task:                      build-dist
+    file:                      kw-docker-lib/ci/tasks/golang-build.yml
+    input_mapping:
+      repo:                    opnsense-cli-repo
+    params:
+      GO_REPO_FOLDER:          /go/src/github.com/eugenmayer/opnsense-cli
+      MAKE_COMMAND:            build
+    output_mapping:
+      # the actual name in the task : <your alias>
+      artifact:                opnsense-cli-dist
+- name: release-opnsense-cli
+  serial:                      true
+  build_logs_to_retain:        5
+  plan:
+  - aggregate:
+    - get:                     kw-docker-lib
+    - get:                     opnsense-cli-version
+      trigger:                 true
+    - get:                     opnsense-cli-repo
+  - task:                      build-dist
+    file:                      kw-docker-lib/ci/tasks/golang-build.yml
+    input_mapping:
+      repo:                    opnsense-cli-repo
+      version:                 opnsense-cli-version
+    params:
+      GO_REPO_FOLDER:          /go/src/github.com/eugenmayer/opnsense-cli
+      MAKE_COMMAND:            release
+    output_mapping:
+      # the actual name in the task : <your alias>
+      artifact:                opnsense-cli-dist
+  - put:                       release-opnsense-cli
+    params:
+      name: opnsense-cli-version/version
+      tag: opnsense-cli-version/version
+      globs:
+      - opnsense-cli-dist/dist/*
+
 - name: build-docker-image-resource
   serial: true
   build_logs_to_retain: 5
@@ -184,6 +232,13 @@ jobs:
           JIRA_VERSION: ((jira.latest))
 
 resources:
+  - name: kw-docker-lib
+    type: git
+    check_every: 5m
+    source:
+      uri: ssh://git@code.kontextwork.de:2201/ci/docker_lib
+      private_key: ((git_kw_ci_sshkey))
+
   - name: docker-image-s3fs
     type: git
     source:
@@ -196,6 +251,17 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-golang-glide
       branch: master      
 
+  - name: opnsense-cli-repo
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/opnsense-cli
+      branch: master      
+  - name: opnsense-cli-version
+    type: concourse-git-semver-tag
+    source:
+      uri: git@github.com:concourse/concourse.git
+      branch: master
+      
   - name: concourse-static-resource
     type: git
     source:
@@ -213,6 +279,12 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-concourseci-worker-solid
       branch: master
+  - name: release-opnsense-cli
+    type: github-release
+    source:
+      owner: eugenmayer
+      repository: eugenmayer/opnsense-cli
+      access_token: {{github_release_token.key}}
 
   - name: docker-image-concourseci-configurator-repo
     type: git
@@ -302,7 +374,7 @@ resources:
       repository: eugenmayer/golang-glide
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: latest      
+      tag: latest             
 
   - name: eugenmayer-docker-image-resource
     type: docker-image
@@ -362,3 +434,7 @@ resource_types:
   source:
     repository: eugenmayer/concourse-docker-image-resource
     tag: latest
+- name: concourse-git-semver-tag
+  type: docker-image
+  source:
+    repository: eugenmayer/concourse-git-semver-tag-resource
