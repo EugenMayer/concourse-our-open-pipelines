@@ -40,6 +40,21 @@ jobs:
     output_mapping:
       # the actual name in the task : <your alias>
       artifact:                opnsense-cli-dist
+- name: release-rundeck
+  serial:                      true
+  build_logs_to_retain:        5
+  plan:
+  - aggregate:
+    - get:                     kw-docker-lib
+    - get:                     rundeck-version
+      trigger:                 true
+    - get:                     rundeck-repo
+  - put: rundeck-image
+    get_params: { skip_download : true }
+    params:
+      build: rundeck-repo
+      build_args:
+        RUNDECK_VERSION: rundeck-version/version    
 - name: release-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
@@ -262,11 +277,29 @@ resources:
     source:
       uri: https://github.com/EugenMayer/opnsense-cli
       branch: master
+  - name: rundeck-repo
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/rundeck
+      branch: master      
+  - name: rundeck-version
+    type: concourse-git-semver-tag
+    source:
+      uri: https://github.com/EugenMayer/rundeck
+      branch: master      
   - name: concourse-static-resource
     type: git
     source:
       uri: https://github.com/EugenMayer/concourse-static-resource
       branch: master
+
+  - name: rundeck-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/rundeck
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
 
   - name: docker-image-resource
     type: git
