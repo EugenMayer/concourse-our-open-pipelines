@@ -44,17 +44,21 @@ jobs:
   serial:                      true
   build_logs_to_retain:        5
   plan:
-  - aggregate:
-    - get:                     kw-docker-lib
+  - aggregate:    
     - get:                     rundeck-version
       trigger:                 true
     - get:                     rundeck-repo
+  - task: extract_build_version
+    input_mapping:
+      rundeck-version: rundeck-version
+    output_mapping:
+      builds_args: build_args_file
+    file: rundeck-repo/ci/tasks/extract_version.yml
   - put: rundeck-image
     get_params: { skip_download : true }
     params:
       build: rundeck-repo
-      build_args:
-        RUNDECK_VERSION: rundeck-version/version    
+      build_args_file: build_args_file/build_args.json
 - name: release-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
