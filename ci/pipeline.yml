@@ -1,4 +1,7 @@
 groups:
+- name: misc
+  jobs:
+  - release-rundeck
 - name: docker-tools
   jobs:
   - build-docker-s3fs-image
@@ -22,6 +25,29 @@ groups:
   - build-docker-images-jira
 
 jobs:
+- name: release-rundeck
+  serial:                      true
+  build_logs_to_retain:        5
+  plan:
+  - aggregate:    
+    - get:                     rundeck-version
+      trigger:                 true
+    - get:                     rundeck-repo
+  - task: extract_build_version
+    input_mapping:
+      rundeck-version: rundeck-version
+    output_mapping:
+      builds_args: build_args
+    file: rundeck-repo/ci/tasks/extract_version.yml
+  - put: rundeck-image
+    get_params: { skip_download : true }
+    params:
+      build: rundeck-repo
+      build_args_file: build_args/build_args.json
+      tag_as_latest: true
+      cache_tag: latest
+      tag: rundeck-version/number
+
 - name: build-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
@@ -40,25 +66,6 @@ jobs:
     output_mapping:
       # the actual name in the task : <your alias>
       artifact:                opnsense-cli-dist
-- name: release-rundeck
-  serial:                      true
-  build_logs_to_retain:        5
-  plan:
-  - aggregate:    
-    - get:                     rundeck-version
-      trigger:                 true
-    - get:                     rundeck-repo
-  - task: extract_build_version
-    input_mapping:
-      rundeck-version: rundeck-version
-    output_mapping:
-      builds_args: build_args_file
-    file: rundeck-repo/ci/tasks/extract_version.yml
-  - put: rundeck-image
-    get_params: { skip_download : true }
-    params:
-      build: rundeck-repo
-      build_args_file: build_args_file/build_args.json
 - name: release-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
@@ -79,6 +86,7 @@ jobs:
     output_mapping:
       # the actual name in the task : <your alias>
       artifact:                opnsense-cli-dist
+  - put:                       release-opnsense-cli
   - put:                       release-opnsense-cli
     params:
       name: opnsense-cli-version/number
