@@ -4,6 +4,7 @@ groups:
   - release-rundeck
 - name: docker-tools
   jobs:
+  - build-docker-image-docker-client
   - build-docker-s3fs-image
   - build-docker-golang-glide-image
 - name: opnsense
@@ -259,6 +260,22 @@ jobs:
         build_args:
           JIRA_VERSION: ((jira.latest))
 
+- name: build-docker-image-docker-client
+  serial: true
+  build_logs_to_retain: 10
+  plan:
+  - get: docker-client-docker-image-src
+    trigger: true
+  - get: docker-image
+    trigger: true
+    params:
+      skip_download: true
+  - put: docker-client-docker-image
+    get_params: { skip_download : true }
+    params:
+      build: docker-client-docker-image-src
+      cache_tag: latest
+
 resources:
   - name: kw-docker-lib
     type: git
@@ -399,6 +416,14 @@ resources:
       password: ((dockerhub.password))
       tag: 3.6
 
+  - name: docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: docker
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
   - name: alpine-edge-image
     type: docker-image-resource-ng
     source:
@@ -469,6 +494,20 @@ resources:
     type: docker-image-resource-ng
     source:
       repository: eugenmayer/jira
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  - name: docker-client-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-docker-client
+      branch: master
+
+  - name: docker-client-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/docker-client
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
