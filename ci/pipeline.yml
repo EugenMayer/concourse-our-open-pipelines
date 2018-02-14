@@ -126,7 +126,7 @@ jobs:
   - put: concourse-worker-solid-image
     params:
       build: docker-image-concourseci-worker-solid
-      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_3.8
+      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_((concourse))
       tag_static: ((concourse))
       cache_tag: latest  
 
