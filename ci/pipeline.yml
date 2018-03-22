@@ -60,12 +60,13 @@ jobs:
   - get:                     bitbucket-version
     trigger:                 true
   - get:                     bitbucket-repo
+  - get:                     pipeline-src
   - task: extract_build_version
     input_mapping:
-      rundeck-version: bitbucket-version
+      input-version: bitbucket-version
     output_mapping:
       builds_args: build_args
-    file: bitbucket-repo/ci/tasks/extract_version.yml
+    file: pipeline-src/ci/tasks/extract_version.yml
   - put: bitbucket-image
     get_params: { skip_download : true }
     params:
@@ -518,6 +519,12 @@ resources:
     type: git
     source:
       uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
+      branch: master
+
+  - name:
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/concourse-our-open-pipelines
       branch: master
 
   - name: pipeline-versions-src
