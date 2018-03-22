@@ -24,8 +24,11 @@ groups:
   jobs:
   - build-docker-images-confluence
   - build-docker-images-jira
+  - release-bitbucket-image
 
 jobs:
+
+### RUNDECK
 - name: release-rundeck
   serial:                      true
   build_logs_to_retain:        5
@@ -49,17 +52,17 @@ jobs:
       cache_tag: latest
       tag: rundeck-version/number
 
+### BITBUCKET
 - name: release-bitbucket-image
   serial:                      true
   build_logs_to_retain:        5
   plan:
-  - aggregate:
-    - get:                     bibucket-version
-      trigger:                 true
-    - get:                     bitbucket-repo
+  - get:                     bitbucket-version
+    trigger:                 true
+  - get:                     bitbucket-repo
   - task: extract_build_version
     input_mapping:
-      rundeck-version: bibucket-version
+      rundeck-version: bitbucket-version
     output_mapping:
       builds_args: build_args
     file: bitbucket-repo/ci/tasks/extract_version.yml
@@ -72,6 +75,7 @@ jobs:
       cache_tag: latest
       tag: bitbucket-version/number
 
+### opnsense cli
 - name: build-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
@@ -355,11 +359,13 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-atlassian-bitbucket
       branch: master
+
   - name: bitbucket-version
     type: concourse-git-semver-tag
     source:
       uri: https://github.com/EugenMayer/docker-image-atlassian-bitbucket
       branch: master
+
   - name: bitbucket-image
     type: docker-image-resource-ng
     source:
@@ -368,7 +374,7 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
-###
+### concourse
   - name: concourse-static-resource
     type: git
     source:
@@ -437,7 +443,7 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
-
+### Gerneral
   - name: debian-stretch-image
     type: docker-image-resource-ng
     source:
