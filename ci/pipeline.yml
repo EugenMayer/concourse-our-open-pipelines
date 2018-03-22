@@ -173,6 +173,7 @@ jobs:
     params:
       build: docker-image-concourseci-configurator-repo
       cache_tag: latest
+
 - name: build-docker-image-concourse-worker-configurator
   serial: true
   build_logs_to_retain: 10
@@ -339,12 +340,12 @@ resources:
   - name: rundeck-repo
     type: git
     source:
-      uri: https://github.com/EugenMayer/rundeck
+      uri: https://github.com/EugenMayer/docker-image-rundeck
       branch: master      
   - name: rundeck-version
     type: concourse-git-semver-tag
     source:
-      uri: https://github.com/EugenMayer/rundeck
+      uri: https://github.com/EugenMayer/docker-image-rundeck
       branch: master
   - name: rundeck-image
     type: docker-image-resource-ng
@@ -374,6 +375,60 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
+### Confluence
+
+  - name: atlassian-confluence-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
+      branch: master
+
+  - name: atlassian-confluence-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/confluence
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+### Jira
+  - name: atlassian-jira-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-jira
+      branch: master
+
+  - name: atlassian-jira-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/jira
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+### opnsense cli
+  - name: release-opnsense-cli
+    type: github-release
+    source:
+      owner: eugenmayer
+      # do not include the username in here
+      repository: opnsense-cli
+      access_token: ((github_release_token.key))
+
+### docker client
+  - name: docker-client-docker-image-src
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-docker-client
+      branch: master
+
+  - name: docker-client-docker-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/docker-client
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
 
 ### concourse
   - name: concourse-static-resource
@@ -393,13 +448,6 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-concourseci-worker-solid
       branch: master
-  - name: release-opnsense-cli
-    type: github-release
-    source:
-      owner: eugenmayer
-      # do not include the username in here
-      repository: opnsense-cli
-      access_token: ((github_release_token.key))
 
   - name: docker-image-concourseci-configurator-repo
     type: git
@@ -412,7 +460,7 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-concourse-worker-configurator
       branch: master
- 
+
   - name: concourse-base-image
     type: docker-image-resource-ng
     source:
@@ -444,6 +492,23 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
+
+  - name: eugenmayer-docker-image-resource
+    type: docker-image
+    source:
+      repository: eugenmayer/concourse-docker-image-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  - name: concourse-static-resource-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/concourse-static-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
 ### Gerneral
   - name: debian-stretch-image
     type: docker-image-resource-ng
@@ -499,27 +564,6 @@ resources:
       password: ((dockerhub.password))
       tag: latest             
 
-  - name: eugenmayer-docker-image-resource
-    type: docker-image
-    source:
-      repository: eugenmayer/concourse-docker-image-resource
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
-
-  - name: concourse-static-resource-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/concourse-static-resource
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
-
-  - name: atlassian-confluence-docker-image-src
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
-      branch: master
 
   - name: pipeline-src
     type: git
@@ -534,41 +578,6 @@ resources:
       branch: master
       paths: ['ci/versions.yml']
 
-  - name: atlassian-confluence-docker-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/confluence
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
-
-  - name: atlassian-jira-docker-image-src
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/docker-image-atlassian-jira
-      branch: master
-
-  - name: atlassian-jira-docker-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/jira
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
-
-  - name: docker-client-docker-image-src
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/docker-image-docker-client
-      branch: master
-
-  - name: docker-client-docker-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/docker-client
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
 
 resource_types:
 - name: docker-image-resource-ng

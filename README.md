@@ -1,10 +1,43 @@
 # WAT
 
-Pipelines we use to build projects we found or created, mostly around concourse but also others
+Pipelines we use to build projects we found or created, mostly around docker images, concourse but also others.
+
+Mostly all are also published for **Rancher** as Catalogs under our public [rancher-catalog](https://github.com/EugenMayer/docker-rancher-extra-catalogs)
 
 ## projects
 
-### concourse configurator
+
+### Rundeck
+
+#### Rundeck Docker Image
+Production grade Rundeck Server, more under https://github.com/EugenMayer/docker-image-rundeck
+
+### Atlassian
+
+#### Jira Docker Image
+Production grade Jira-Server builds for all patched versions to be run in a docker container, more under https://github.com/EugenMayer/docker-image-atlassian-jira
+
+#### Confluence Docker Image
+Production grade Confluence-Server builds for all patched versions to be run in a docker container, more under https://github.com/EugenMayer/docker-image-atlassian-confluence
+
+#### Bitbucket Docker Image
+Production grade Bitbucket-Server for the recent releases to be run in a docker container, more under https://github.com/EugenMayer/docker-image-atlassian-bitbucket
+
+### OPNsense
+
+#### OPNsense-cli
+
+A golang based opnsense cli to to remotely access the REST-API of opnsense or being using in a golang projects for automating 
+OPNsense tasks as libarary. See https://github.com/EugenMayer/opnsense-cli for more
+
+### Docker
+
+#### Docker Client Image
+Slim docker image to include docker-compose and the docker binary for remote docker operations, more under https://github.com/EugenMayer/docker-image-docker-client
+
+### Concourse
+
+#### concourse configurator
 
 When starting a concourse-server you usually need to create some keys first, in case you have vault, you even need to do a lot more
 and also setup all this manually. This is very interruptive and also makes spinning up local instances inconvinient, but much more then that,
@@ -15,7 +48,7 @@ build a rancher catalog for concourse would be very inconvenient. Thats is where
 
 See https://github.com/EugenMayer/docker-image-concourse-configurator for more documentations and usage, or just see the boilerplate for a conrete example
 
-### concourse worker solid
+#### concourse worker solid
 
 Currently when running concourse-workers in non BOSH environments, like we do with `docker-compose`, see https://github.com/EugenMayer/concourseci-server-boilerplate
 when you shutdown the stack for restart or upgrade, the worker becomes to be in a broken, undefined state, leading to a lot of different issues like
@@ -29,7 +62,7 @@ And thats about it
 The docker-image can be found under [eugenmayer/concourse-worker-solid](https://hub.docker.com/r/eugenmayer/concourse-worker-solid/)
 
 
-### docker-image-resource-ng
+#### docker-image-resource-ng
 
 Replaces / extends the core implementation of concourse [docker-image-resource](https://github.com/concourse/docker-image-resource) with [docker-image-resource-ng](https://github.com/EugenMayer/docker-image-resource-ng) to:
 
@@ -40,7 +73,7 @@ Replaces / extends the core implementation of concourse [docker-image-resource](
 Source can be found [here](https://github.com/EugenMayer/docker-image-resource-ng)
 The docker-image can be found under [eugenmayer/concourse-docker-image-resource](https://hub.docker.com/r/eugenmayer/concourse-docker-image-resource/)
 
-### static-resource
+#### static-resource
 
 Replaces / reimplements the `archive-resource` with [static-resource](https://github.com/EugenMayer/concourse-static-resource)
 
