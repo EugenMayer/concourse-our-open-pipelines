@@ -521,7 +521,7 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-atlassian-confluence
       branch: master
 
-  - name:
+  - name: pipeline-src
     type: git
     source:
       uri: https://github.com/EugenMayer/concourse-our-open-pipelines
