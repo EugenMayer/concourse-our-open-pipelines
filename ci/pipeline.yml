@@ -49,6 +49,29 @@ jobs:
       cache_tag: latest
       tag: rundeck-version/number
 
+- name: release-bitbucket-image
+  serial:                      true
+  build_logs_to_retain:        5
+  plan:
+  - aggregate:
+    - get:                     bibucket-version
+      trigger:                 true
+    - get:                     bitbucket-repo
+  - task: extract_build_version
+    input_mapping:
+      rundeck-version: bibucket-version
+    output_mapping:
+      builds_args: build_args
+    file: bitbucket-repo/ci/tasks/extract_version.yml
+  - put: bitbucket-image
+    get_params: { skip_download : true }
+    params:
+      build: bitbucket-repo
+      build_args_file: build_args/build_args.json
+      tag_as_latest: true
+      cache_tag: latest
+      tag: bitbucket-version/number
+
 - name: build-opnsense-cli
   serial:                      true
   build_logs_to_retain:        5
@@ -306,6 +329,8 @@ resources:
     source:
       uri: https://github.com/EugenMayer/opnsense-cli
       branch: master
+
+## RUNDECK
   - name: rundeck-repo
     type: git
     source:
@@ -315,13 +340,7 @@ resources:
     type: concourse-git-semver-tag
     source:
       uri: https://github.com/EugenMayer/rundeck
-      branch: master      
-  - name: concourse-static-resource
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/concourse-static-resource
       branch: master
-
   - name: rundeck-image
     type: docker-image-resource-ng
     source:
@@ -329,6 +348,32 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
+
+## bitbucket
+  - name: bitbucket-repo
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-bitbucket
+      branch: master
+  - name: bitbucket-version
+    type: concourse-git-semver-tag
+    source:
+      uri: https://github.com/EugenMayer/docker-image-atlassian-bitbucket
+      branch: master
+  - name: bitbucket-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/bitbucket
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+###
+  - name: concourse-static-resource
+    type: git
+    source:
+      uri: https://github.com/EugenMayer/concourse-static-resource
+      branch: master
 
   - name: docker-image-resource
     type: git
