@@ -33,10 +33,9 @@ jobs:
   serial:                      true
   build_logs_to_retain:        5
   plan:
-  - aggregate:    
-    - get:                     rundeck-version
-      trigger:                 true
-    - get:                     rundeck-repo
+  - get:                     rundeck-version
+    trigger:                 true
+  - get:                     rundeck-repo
   - task: extract_build_version
     input_mapping:
       rundeck-version: rundeck-version
