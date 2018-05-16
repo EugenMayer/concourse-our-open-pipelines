@@ -15,6 +15,7 @@ groups:
   jobs:
   - build-docker-image-resource
   - build-concourse-static-resource-image
+  - build-hipchat-notification-resource-image
 - name: concourse-docker-images
   jobs:
   - build-docker-image-concourse-worker
@@ -203,6 +204,18 @@ jobs:
     get_params: { skip_download : true }
     params:
       build: concourse-static-resource
+      cache_tag: latest
+
+- name: build-hipchat-notification-resource-image
+  serial: true
+  build_logs_to_retain: 5
+  plan:
+  - get: hipchat-notification-resource-src
+    trigger: true
+  - put: hipchat-notification-resource-image
+    get_params: { skip_download : true }
+    params:
+      build: hipchat-notification-resource-src
       cache_tag: latest
 
 - name: build-docker-golang-glide-image
@@ -508,7 +521,22 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
-### Gerneral
+  # Hipchat notification concourse resource image
+  - name: hipchat-notification-resource-src
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-community/hipchat-notification-resource
+      branch: master
+
+  - name: hipchat-notification-resource-image
+    type: docker-image-resource-ng
+    source:
+      repository: eugenmayer/hipchat-notification-resource
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: latest
+
+  ### General
   - name: debian-stretch-image
     type: docker-image-resource-ng
     source:
