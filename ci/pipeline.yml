@@ -525,7 +525,7 @@ resources:
   - name: hipchat-notification-resource-src
     type: git
     source:
-      uri: https://github.com/cloudfoundry-community/hipchat-notification-resource
+      uri: https://github.com/KarolBuchta/hipchat-notification-resource
       branch: master
 
   - name: hipchat-notification-resource-image
