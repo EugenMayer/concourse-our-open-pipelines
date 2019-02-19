@@ -6,4 +6,4 @@ jira:
   early: 7.0.11
   latest: 8.0.0
 
-concourse: 4.2.1
+concourse: 4.2.3
