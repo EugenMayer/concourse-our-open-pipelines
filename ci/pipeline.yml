@@ -154,11 +154,11 @@ jobs:
     get_params: { skip_download : true }
     params:
       build: docker-image-concourseci-configurator-repo
-      tag: 5.x
       tag_as_latest: true
       cache_tag: latest
 
-- name: build-docker-image-concourse-worker-configurator
+- name: build-docker-image-concourse-worker-
+ator
   serial: true
   build_logs_to_retain: 10
   plan:
@@ -457,7 +457,7 @@ resources:
       repository: eugenmayer/concourse-configurator
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: latest
+      tag: 5.x
 
   - name: concourse-worker-configurator-image
     type: docker-image-resource-ng
