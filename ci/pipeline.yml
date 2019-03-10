@@ -157,8 +157,7 @@ jobs:
       tag_as_latest: true
       cache_tag: latest
 
-- name: build-docker-image-concourse-worker-
-ator
+- name: build-docker-image-concourse-worker-configurator
   serial: true
   build_logs_to_retain: 10
   plan:
