@@ -18,7 +18,6 @@ groups:
   - build-hipchat-notification-resource-image
 - name: concourse-docker-images
   jobs:
-  - build-docker-image-concourse-worker
   - build-docker-image-concourse-configurator
   - build-docker-image-concourse-worker-configurator
 - name: atlassian-docker-images
@@ -139,24 +138,7 @@ jobs:
     get_params: { skip_download : true }
     params:
       build: docker-built-context
-      cache_tag: latest
-      
-- name: build-docker-image-concourse-worker
-  serial: true
-  build_logs_to_retain: 5
-  plan:
-  - get: docker-image-concourseci-worker-solid
-    trigger: true
-  - get: concourse-base-image
-    trigger: true
-    params:
-      skip_download: true      
-  - put: concourse-worker-solid-image
-    params:
-      build: docker-image-concourseci-worker-solid
-      dockerfile: docker-image-concourseci-worker-solid/Dockerfile_((concourse))
-      tag_static: ((concourse))
-      cache_tag: latest  
+      cache_tag: latest     
 
 - name: build-docker-image-concourse-configurator
   serial: true
