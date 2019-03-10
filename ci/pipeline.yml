@@ -154,6 +154,8 @@ jobs:
     get_params: { skip_download : true }
     params:
       build: docker-image-concourseci-configurator-repo
+      tag: 5.x
+      tag_as_latest: true
       cache_tag: latest
 
 - name: build-docker-image-concourse-worker-configurator
