@@ -437,12 +437,6 @@ resources:
       uri: https://github.com/EugenMayer/docker-image-resource-ng
       branch: develop
 
-  - name: docker-image-concourseci-worker-solid
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/docker-image-concourseci-worker-solid
-      branch: master
-
   - name: docker-image-concourseci-configurator-repo
     type: git
     source:
@@ -454,22 +448,6 @@ resources:
     source:
       uri: https://github.com/EugenMayer/docker-image-concourse-worker-configurator
       branch: master
-
-  - name: concourse-base-image
-    type: docker-image-resource-ng
-    source:
-      repository: concourse/concourse
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: ((concourse))
-
-  - name: concourse-worker-solid-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/concourse-worker-solid
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: ((concourse))
 
   - name: concourse-configurator-image
     type: docker-image-resource-ng
