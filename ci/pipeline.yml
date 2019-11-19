@@ -168,7 +168,7 @@ jobs:
   serial: true
   build_logs_to_retain: 5
   plan:
-    - get: adoptjdk-openjdk11-openj9-debian
+    - get: adoptjdk-openjdk11-debian
       trigger: true
     - get: pipeline-versions-src
       trigger: true
@@ -402,15 +402,6 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: debian
-
-  - name: adoptjdk-openjdk11-openj9-debian
-    type: docker-image-resource-ng
-    source:
-      repository: adoptopenjdk/openjdk11-openj9
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: debian
-
 
   - name: alpine-image
     type: docker-image-resource-ng
