@@ -6,16 +6,10 @@ groups:
   jobs:
   - build-docker-image-docker-client
   - build-docker-s3fs-image
-  - build-docker-golang-glide-image
-- name: opnsense
-  jobs:
-  - build-opnsense-cli
-  - release-opnsense-cli
 - name: concourse-resources
   jobs:
   - build-docker-image-resource
   - build-concourse-static-resource-image
-  - build-hipchat-notification-resource-image
 - name: concourse-docker-images
   jobs:
   - build-docker-image-concourse-configurator
@@ -74,53 +68,6 @@ jobs:
       tag_as_latest: true
       cache_tag: latest
       tag: bitbucket-version/number
-
-### opnsense cli
-- name: build-opnsense-cli
-  serial:                      true
-  build_logs_to_retain:        5
-  plan:
-  - aggregate:
-    - get:                     kw-docker-lib
-    - get:                     opnsense-cli-repo
-      trigger:                 true
-  - task:                      build-dist
-    file:                      kw-docker-lib/ci/tasks/golang-build.yml
-    input_mapping:
-      repo:                    opnsense-cli-repo
-    params:
-      GO_REPO_FOLDER:          /go/src/github.com/eugenmayer/opnsense-cli
-      MAKE_COMMAND:            build
-    output_mapping:
-      # the actual name in the task : <your alias>
-      artifact:                opnsense-cli-dist
-- name: release-opnsense-cli
-  serial:                      true
-  build_logs_to_retain:        5
-  plan:
-  - aggregate:
-    - get:                     kw-docker-lib
-    - get:                     opnsense-cli-version
-      trigger:                 true
-    - get:                     opnsense-cli-repo
-  - task:                      build-dist
-    file:                      kw-docker-lib/ci/tasks/golang-release.yml
-    input_mapping:
-      repo:                    opnsense-cli-repo
-      version:                 opnsense-cli-version
-    params:
-      GO_REPO_FOLDER:          /go/src/github.com/eugenmayer/opnsense-cli
-      MAKE_COMMAND:            release
-    output_mapping:
-      # the actual name in the task : <your alias>
-      artifact:                opnsense-cli-dist
-  - put:                       release-opnsense-cli
-  - put:                       release-opnsense-cli
-    params:
-      name: opnsense-cli-version/number
-      tag: opnsense-cli-version/number
-      globs:
-      - opnsense-cli-dist/opn-*
 
 - name: build-docker-image-resource
   serial: true
@@ -189,33 +136,18 @@ jobs:
       build: concourse-static-resource
       cache_tag: latest
 
-- name: build-hipchat-notification-resource-image
-  serial: true
-  build_logs_to_retain: 5
-  plan:
-  - get: hipchat-notification-resource-src
-    trigger: true
-  - put: hipchat-notification-resource-image
-    get_params: { skip_download : true }
-    params:
-      build: hipchat-notification-resource-src
-      cache_tag: latest
+#- name: build-hipchat-notification-resource-image
+#  serial: true
+#  build_logs_to_retain: 5
+#  plan:
+#  - get: hipchat-notification-resource-src
+#    trigger: true
+#  - put: hipchat-notification-resource-image
+#    get_params: { skip_download : true }
+#    params:
+#      build: hipchat-notification-resource-src
+#      cache_tag: latest
 
-- name: build-docker-golang-glide-image
-  serial: true
-  build_logs_to_retain: 5
-  plan:
-  - get: docker-image-golang-glide-repo
-    trigger: true
-  - get: golang-alpine-1.9-image
-    trigger: true
-    params:
-      skip_download: true
-  - put: eugenmayer-docker-image-golang-glide
-    get_params: { skip_download : true }
-    params:
-      build: docker-image-golang-glide-repo
-      cache_tag: latest
 - name: build-docker-s3fs-image
   serial: true
   build_logs_to_retain: 5
@@ -236,18 +168,20 @@ jobs:
   serial: true
   build_logs_to_retain: 5
   plan:
+    - get: adoptjdk-openjdk11-openj9-debian
+      trigger: true
     - get: pipeline-versions-src
       trigger: true
     - get: atlassian-confluence-docker-image-src
       trigger: true
     # A fixed earlier version
-    - put: atlassian-confluence-docker-image
-      get_params: { skip_download : true }
-      params:
-        build: atlassian-confluence-docker-image-src
-        tag_static: ((confluence.early))
-        build_args:
-          CONFLUENCE_VERSION: ((confluence.early))
+#    - put: atlassian-confluence-docker-image
+#      get_params: { skip_download : true }
+#      params:
+#        build: atlassian-confluence-docker-image-src
+#        tag_static: ((confluence.early))
+#        build_args:
+#          CONFLUENCE_VERSION: ((confluence.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-confluence-docker-image
       get_params: { skip_download : true }
@@ -262,18 +196,20 @@ jobs:
   serial: true
   build_logs_to_retain: 5
   plan:
+    - get: adoptjdk-openjdk11-debian
+      trigger: true
     - get: pipeline-versions-src
       trigger: true
     - get: atlassian-jira-docker-image-src
       trigger: true
     # A fixed earlier version
-    - put: atlassian-jira-docker-image
-      get_params: { skip_download : true }
-      params:
-        build: atlassian-jira-docker-image-src
-        tag_static: en-((jira.early))
-        build_args:
-          JIRA_VERSION: ((jira.early))
+#    - put: atlassian-jira-docker-image
+#      get_params: { skip_download : true }
+#      params:
+#        build: atlassian-jira-docker-image-src
+#        tag_static: en-((jira.early))
+#        build_args:
+#          JIRA_VERSION: ((jira.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-jira-docker-image
       get_params: { skip_download : true }
@@ -301,34 +237,10 @@ jobs:
       cache_tag: latest
 
 resources:
-  - name: kw-docker-lib
-    type: git
-    check_every: 5m
-    source:
-      uri: ssh://git@code.kontextwork.de:2201/ci/docker_lib
-      private_key: ((git_kw_ci_sshkey))
-
   - name: docker-image-s3fs
     type: git
     source:
       uri: https://github.com/EugenMayer/docker-image-s3fs
-      branch: master
- 
-  - name: docker-image-golang-glide-repo
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/docker-image-golang-glide
-      branch: master      
-
-  - name: opnsense-cli-repo
-    type: git
-    source:
-      uri: https://github.com/EugenMayer/opnsense-cli
-      branch: master      
-  - name: opnsense-cli-version
-    type: concourse-git-semver-tag
-    source:
-      uri: https://github.com/EugenMayer/opnsense-cli
       branch: master
 
 ## RUNDECK
@@ -401,14 +313,6 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
-### opnsense cli
-  - name: release-opnsense-cli
-    type: github-release
-    source:
-      owner: eugenmayer
-      # do not include the username in here
-      repository: opnsense-cli
-      access_token: ((github_release_token.key))
 
 ### docker client
   - name: docker-client-docker-image-src
@@ -482,21 +386,6 @@ resources:
       password: ((dockerhub.password))
       tag: latest
 
-  # Hipchat notification concourse resource image
-  - name: hipchat-notification-resource-src
-    type: git
-    source:
-      uri: https://github.com/KarolBuchta/hipchat-notification-resource
-      branch: master
-
-  - name: hipchat-notification-resource-image
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/hipchat-notification-resource
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest
-
   ### General
   - name: debian-stretch-image
     type: docker-image-resource-ng
@@ -505,13 +394,23 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: stretch
-  - name: golang-alpine-1.9-image
+
+  - name: adoptjdk-openjdk11-debian
     type: docker-image-resource-ng
     source:
-      repository: golang
+      repository: adoptopenjdk/openjdk11
       username: ((dockerhub.user))
       password: ((dockerhub.password))
-      tag: 1.9-alpine      
+      tag: debian
+
+  - name: adoptjdk-openjdk11-openj9-debian
+    type: docker-image-resource-ng
+    source:
+      repository: adoptopenjdk/openjdk11-openj9
+      username: ((dockerhub.user))
+      password: ((dockerhub.password))
+      tag: debian
+
 
   - name: alpine-image
     type: docker-image-resource-ng
@@ -544,15 +443,6 @@ resources:
       username: ((dockerhub.user))
       password: ((dockerhub.password))
       tag: latest
-  - name: eugenmayer-docker-image-golang-glide
-    type: docker-image-resource-ng
-    source:
-      repository: eugenmayer/golang-glide
-      username: ((dockerhub.user))
-      password: ((dockerhub.password))
-      tag: latest             
-
-
   - name: pipeline-src
     type: git
     source:
