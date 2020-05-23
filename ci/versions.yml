@@ -1,8 +1,8 @@
 confluence:
   early: 5.7.6
-  latest: 7.4.0
+  latest: 7.5.0
 jira:
   early: 7.0.11
-  latest: 8.8.1
+  latest: 8.9.0
   
 concourse: 5.8.0
