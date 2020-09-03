@@ -175,13 +175,14 @@ jobs:
     - get: atlassian-confluence-docker-image-src
       trigger: true
     # A fixed earlier version
-#    - put: atlassian-confluence-docker-image
-#      get_params: { skip_download : true }
-#      params:
-#        build: atlassian-confluence-docker-image-src
-#        tag_static: ((confluence.early))
-#        build_args:
-#          CONFLUENCE_VERSION: ((confluence.early))
+    - put: atlassian-confluence-docker-image
+      get_params: { skip_download : true }
+      params:
+        build: atlassian-confluence-docker-image-src
+        Dockerfile: Dockerfile_java8
+        tag_static: ((confluence.early))
+        build_args:
+          CONFLUENCE_VERSION: ((confluence.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-confluence-docker-image
       get_params: { skip_download : true }
