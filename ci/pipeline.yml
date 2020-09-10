@@ -204,13 +204,14 @@ jobs:
     - get: atlassian-jira-docker-image-src
       trigger: true
     # A fixed earlier version
-#    - put: atlassian-jira-docker-image
-#      get_params: { skip_download : true }
-#      params:
-#        build: atlassian-jira-docker-image-src
-#        tag_static: en-((jira.early))
-#        build_args:
-#          JIRA_VERSION: ((jira.early))
+    - put: atlassian-jira-docker-image
+      get_params: { skip_download: true }
+      params:
+        build: atlassian-jira-docker-image-src
+        Dockerfile: Dockerfile_java8
+        tag_static: en-((jira.early))
+        build_args:
+          JIRA_VERSION: ((jira.early))
     # The latest version tagged as <version> and as 'latest'
     - put: atlassian-jira-docker-image
       get_params: { skip_download : true }
