@@ -1,6 +1,6 @@
 confluence:
   early: 6.13.15
-  latest: 7.12.3
+  latest: 7.13.0
 jira:
   early: 7.6.17
   latest: 8.18.1
